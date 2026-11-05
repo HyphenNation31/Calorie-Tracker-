@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0c0e">
+<title>Nutrition Tracker</title>
+
+<style>
+:root {
+    --bg:#0c0c0e;
+    --card:#16161a;
+    --border:#25252b;
+    --white:#fff;
+    --muted:#888890;
+    --green:#00e676;
+    --blue:#00b0ff;
+    --red:#ff4545;
+}
+
+* {box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+html,body {
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--white);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+}
+
+body {
+    padding:0 16px calc(30px + env(safe-area-inset-bottom));
+}
+
+button,input {font:inherit}
+button {cursor:pointer}
+
+.app {
+    max-width:520px;
+    margin:auto;
+    padding-top:calc(20px + env(safe-area-inset-top));
+}
+
+.header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.logo {
+    font-size:23px;
+    font-weight:850;
+    letter-spacing:-1px;
+}
+
+.logo span {color:var(--green)}
+
+.date {font-size:12px;color:var(--muted)}
+
+.card {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:19px;
+    margin-bottom:15px;
+}
+
+.section-title {
+    font-size:17px;
+    font-weight:750;
+    letter-spacing:-.4px;
+}
+
+.subtitle {
+    font-size:12px;
+    color:var(--muted);
+    margin-top:5px;
+}
+
+.progress-row {margin-top:21px}
+
+.progress-heading {
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:650;
+    margin-bottom:9px;
+}
+
+.progress-heading span:last-child {color:var(--muted)}
+
+.bar {
+    height:26px;
+    background:#29292e;
+    border-radius:8px;
+    overflow:hidden;
+}
+
+.fill {
+    height:100%;
+    width:0%;
+    border-radius:8px;
+    transition:width .3s ease;
+}
+
+.green {background:var(--green)}
+.blue {background:var(--blue)}
+
+.stats {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:17px;
+}
+
+.stat {
+    background:#202025;
+    border-radius:11px;
+    padding:13px;
+}
+
+.stat-label {font-size:11px;color:var(--muted)}
+.stat-number {font-size:23px;font-weight:750;margin-top:5px}
+.stat-number small {font-size:11px;color:var(--muted)}
+
+.section-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+}
+
+.secondary-btn {
+    background:#242429;
+    border:1px solid #36363d;
+    color:white;
+    border-radius:9px;
+    padding:10px 12px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.food-list {margin-top:17px}
+
+.food-item {
+    padding:15px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.food-main {
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.food-check {
+    width:21px;
+    height:21px;
+    accent-color:var(--green);
+    flex-shrink:0;
+}
+
+.food-info {flex:1;min-width:0}
+
+.food-name {font-size:14px;font-weight:650}
+
+.food-description {
+    font-size:11px;
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.food-edit-name {
+    width:100%;
+    background:#222227;
+    border:1px solid #38383e;
+    color:white;
+    padding:9px;
+    border-radius:7px;
+    outline:none;
+}
+
+.food-numbers {
+    display:flex;
+    gap:7px;
+    align-items:center;
+}
+
+.macro-input {
+    width:57px;
+    background:#222227;
+    border:1px solid #34343a;
+    color:white;
+    border-radius:7px;
+    padding:9px 3px;
+    text-align:center;
+    font-size:12px;
+    outline:none;
+}
+
+.macro-label {
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    text-align:center;
+    margin-top:4px;
+}
+
+.shake-options {
+    display:none;
+    margin:13px 0 0 32px;
+    padding:13px;
+    background:#202025;
+    border-radius:10px;
+    animation:reveal .2s ease;
+}
+
+.shake-options.open {display:block}
+
+.radio-option {
+    display:flex;
+    gap:9px;
+    align-items:center;
+    font-size:13px;
+    padding:9px 0;
+}
+
+.radio-option input {accent-color:var(--blue)}
+
+.snack-form {
+    margin-top:20px;
+    padding-top:17px;
+    border-top:1px solid var(--border);
+}
+
+.form-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:13px;
+}
+
+.name-field {grid-column:span 2}
+
+.field {display:flex;flex-direction:column;gap:7px}
+
+.field label {font-size:11px;color:var(--muted)}
+
+.field input {
+    width:100%;
+    background:#222227;
+    border:1px solid #35353c;
+    color:white;
+    border-radius:9px;
+    padding:12px;
+    outline:none;
+}
+
+.field input:focus,.macro-input:focus {border-color:var(--blue)}
+
+.primary-btn {
+    background:white;
+    color:black;
+    border:0;
+    border-radius:9px;
+    padding:13px;
+    font-weight:800;
+    width:100%;
+    margin-top:12px;
+}
+
+.snack-delete {
+    background:transparent;
+    color:var(--red);
+    border:1px solid #642626;
+    border-radius:8px;
+    padding:8px 11px;
+    font-weight:850;
+}
+
+.reset-btn {
+    width:100%;
+    margin-top:7px;
+    padding:17px;
+    border-radius:12px;
+    background:#271717;
+    color:#ff5555;
+    border:1px solid #572525;
+    font-size:12px;
+    font-weight:850;
+    letter-spacing:.7px;
+}
+
+.note {
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.5;
+    margin-top:15px;
+}
+
+.footer {
+    text-align:center;
+    color:#55555d;
+    font-size:10px;
+    margin-top:22px;
+}
+
+@keyframes reveal {
+    from {opacity:0;transform:translateY(-5px)}
+    to {opacity:1;transform:translateY(0)}
+}
+
+@media(max-width:360px) {
+    .macro-input {width:48px}
+    .card {padding:15px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="header">
+    <div class="logo">NUTRITION<span>.</span></div>
+    <div class="date" id="date"></div>
+</header>
+
+<!-- OVERVIEW -->
+
+<section class="card">
+    <div class="section-title">Daily Overview</div>
+    <div class="subtitle">Your nutrition at a glance</div>
+
+    <div class="progress-row">
+        <div class="progress-heading">
+            <span>Meals completed</span>
+            <span id="mealCount">0 / 5</span>
+        </div>
+        <div class="bar">
+            <div class="fill green" id="mealBar"></div>
+        </div>
+    </div>
+
+    <div class="progress-row">
+        <div class="progress-heading">
+            <span>Protein logged</span>
+            <span id="proteinDisplay">0g</span>
+        </div>
+        <div class="bar">
+            <div class="fill blue" id="proteinBar"></div>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Calories logged</div>
+            <div class="stat-number" id="calorieStat">0</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Protein logged</div>
+            <div class="stat-number"><span id="proteinStat">0</span><small> g</small></div>
+        </div>
+    </div>
+
+    <div class="note">
+        Totals reflect checked foods only. Nutrition values are editable.
+    </div>
+</section>
+
+<!-- FOOD LOG -->
+
+<section class="card">
+
+    <div class="section-header">
+        <div>
+            <div class="section-title">Food Logs</div>
+            <div class="subtitle">Your daily meals and snacks</div>
+        </div>
+        <button class="secondary-btn" id="editButton" onclick="toggleEdit()">
+            EDIT NAMES
+        </button>
+    </div>
+
+    <div class="food-list" id="foodList"></div>
+
+    <!-- ADD SNACK -->
+
+    <div class="snack-form">
+        <div class="section-title" style="font-size:14px">
+            + Add Extra Food
+        </div>
+
+        <div class="form-grid">
+            <div class="field name-field">
+                <label>Food name</label>
+                <input id="snackName" type="text" placeholder="e.g. Greek yogurt">
+            </div>
+
+            <div class="field">
+                <label>Calories</label>
+                <input id="snackCalories" type="number" min="0" placeholder="0">
+            </div>
+
+            <div class="field">
+                <label>Protein (g)</label>
+                <input id="snackProtein" type="number" min="0" placeholder="0">
+            </div>
+        </div>
+
+        <button class="primary-btn" onclick="addSnack()">ADD FOOD</button>
+    </div>
+</section>
+
+<button class="reset-btn" onclick="resetDaily()">
+    RESET DAILY PROGRESS
+</button>
+
+<div class="footer">
+    NUTRITION TRACKER · SAVED ON THIS DEVICE
+</div>
+
+</div>
+
+<script>
+const STORAGE_KEY = "nutrition_tracker_v2";
+
+const defaults = [
+    {
+        id:"breakfast",
+        name:"Morning Breakfast",
+        calories:380,
+        protein:42,
+        checked:false,
+        description:"Daily breakfast"
+    },
+    {
+        id:"lunch",
+        name:"School Lunch",
+        calories:440,
+        protein:38,
+        checked:false,
+        description:"Lunch"
+    },
+    {
+        id:"dinner",
+        name:"Grandma's Dinner",
+        calories:"",
+        protein:"",
+        checked:false,
+        description:"Homemade dinner"
+    },
+    {
+        id:"yogurt",
+        name:"Protein Yogurt",
+        calories:120,
+        protein:18,
+        checked:false,
+        description:"Protein snack"
+    },
+    {
+        id:"shake",
+        name:"Protein Shake",
+        calories:110,
+        protein:25,
+        checked:false,
+        description:"Powder base"
+    }
+];
+
+let state = {
+    foods:structuredClone(defaults),
+    snacks:[],
+    editMode:false,
+    shakeOption:"water"
+};
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+
+        const parsed = JSON.parse(saved);
+
+        if (Array.isArray(parsed.foods)) {
+            state.foods = defaults.map(def => {
+                const savedFood = parsed.foods.find(f => f.id === def.id);
+                return savedFood ? {...def,...savedFood} : {...def};
+            });
+        }
+
+        state.snacks = Array.isArray(parsed.snacks) ? parsed.snacks : [];
+        state.shakeOption = parsed.shakeOption === "milk" ? "milk" : "water";
+
+    } catch(error) {
+        console.error("Storage loading error:",error);
+    }
+}
+
+function saveData() {
+    try {
+        localStorage.setItem(STORAGE_KEY,JSON.stringify({
+            foods:state.foods,
+            snacks:state.snacks,
+            shakeOption:state.shakeOption
+        }));
+    } catch(error) {
+        console.error("Storage saving error:",error);
+    }
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g,c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+    })[c]);
+}
+
+function getFood(id) {
+    return state.foods.find(f => f.id === id);
+}
+
+function renderFoods() {
+    const container = document.getElementById("foodList");
+    container.innerHTML = "";
+
+    state.foods.forEach(food => {
+        const item = document.createElement("div");
+        item.className = "food-item";
+
+        const nameHTML = state.editMode
+            ? `<input class="food-edit-name" type="text"
+                 data-id="${food.id}" value="${escapeHTML(food.name)}">`
+            : `<div class="food-name">${escapeHTML(food.name)}</div>`;
+
+        item.innerHTML = `
+            <div class="food-main">
+                <input class="food-check" type="checkbox"
+                    data-id="${food.id}"
+                    ${food.checked ? "checked" : ""}>
+
+                <div class="food-info">
+                    ${nameHTML}
+                    <div class="food-description">
+                        ${escapeHTML(food.description)}
+                    </div>
+                </div>
+
+                <div class="food-numbers">
+                    <div>
+                        <input class="macro-input" type="number" min="0"
+                            data-id="${food.id}" data-macro="calories"
+                            placeholder="0" value="${escapeHTML(food.calories)}">
+                        <span class="macro-label">KCAL</span>
+                    </div>
+                    <div>
+                        <input class="macro-input" type="number" min="0"
+                            data-id="${food.id}" data-macro="protein"
+                            placeholder="0" value="${escapeHTML(food.protein)}">
+                        <span class="macro-label">PROTEIN</span>
+                    </div>
+                </div>
+            </div>
+
+            ${food.id === "shake" ? `
+                <div class="shake-options ${food.checked ? "open" : ""}">
+                    <div class="subtitle">Choose your shake liquid</div>
+
+                    <label class="radio-option">
+                        <input type="radio" name="shake" value="water"
+                            ${state.shakeOption === "water" ? "checked" : ""}>
+                        Water · No additional macros
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio" name="shake" value="milk"
+                            ${state.shakeOption === "milk" ? "checked" : ""}>
+                        Milk · +80 kcal / +13g protein
+                    </label>
+                </div>
+            ` : ""}
+        `;
+
+        container.appendChild(item);
+    });
+
+    state.snacks.forEach(snack => {
+        const item = document.createElement("div");
+        item.className = "food-item";
+
+        item.innerHTML = `
+            <div class="food-main">
+                <input class="food-check" type="checkbox"
+                    data-snack="${snack.id}"
+                    ${snack.checked ? "checked" : ""}>
+
+                <div class="food-info">
+                    <div class="food-name">${escapeHTML(snack.name)}</div>
+                    <div class="food-description">Custom food</div>
+                </div>
+
+                <div class="food-numbers">
+                    <div>
+                        <input class="macro-input" type="number" min="0"
+                            data-snack="${snack.id}" data-macro="calories"
+                            value="${escapeHTML(snack.calories)}">
+                        <span class="macro-label">KCAL</span>
+                    </div>
+                    <div>
+                        <input class="macro-input" type="number" min="0"
+                            data-snack="${snack.id}" data-macro="protein"
+                            value="${escapeHTML(snack.protein)}">
+                        <span class="macro-label">PROTEIN</span>
+                    </div>
+                    <button class="snack-delete"
+                        data-delete="${snack.id}" aria-label="Delete snack">X</button>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(item);
+    });
+
+    document.getElementById("editButton").textContent =
+        state.editMode ? "SAVE NAMES" : "EDIT NAMES";
+
+    updateOverview();
+}
+
+function updateOverview() {
+    const checked = [
+        ...state.foods.filter(f => f.checked),
+        ...state.snacks.filter(s => s.checked)
+    ];
+
+    let calories = checked.reduce(
+        (sum,f) => sum + (Number(f.calories) || 0),0
+    );
+
+    let protein = checked.reduce(
+        (sum,f) => sum + (Number(f.protein) || 0),0
+    );
+
+    const shake = getFood("shake");
+
+    if (shake?.checked && state.shakeOption === "milk") {
+        calories += 80;
+        protein += 13;
+    }
+
+    const totalItems = state.foods.length + state.snacks.length;
+
+    document.getElementById("mealCount").textContent =
+        `${checked.length} / ${totalItems}`;
+
+    document.getElementById("proteinDisplay").textContent = protein + "g";
+    document.getElementById("proteinStat").textContent = protein;
+    document.getElementById("calorieStat").textContent = calories.toLocaleString();
+
+    document.getElementById("mealBar").style.width =
+        totalItems ? (checked.length / totalItems * 100) + "%" : "0%";
+
+    document.getElementById("proteinBar").style.width =
+        Math.min(protein / 150 * 100,100) + "%";
+}
+
+// Event delegation keeps dynamically created food items functional.
+document.getElementById("foodList").addEventListener("change",event => {
+    const el = event.target;
+
+    if (el.matches(".food-check")) {
+        if (el.dataset.id) {
+            getFood(el.dataset.id).checked = el.checked;
+        } else if (el.dataset.snack) {
+            const snack = state.snacks.find(s => s.id === el.dataset.snack);
+            if (snack) snack.checked = el.checked;
+        }
+
+        saveData();
+        renderFoods();
+        return;
+    }
+
+    if (el.matches(".macro-input")) {
+        const value = el.value;
+
+        if (el.dataset.id) {
+            getFood(el.dataset.id)[el.dataset.macro] = value;
+        } else if (el.dataset.snack) {
+            const snack = state.snacks.find(s => s.id === el.dataset.snack);
+            if (snack) snack[el.dataset.macro] = value;
+        }
+
+        saveData();
+        updateOverview();
+        return;
+    }
+
+    if (el.matches(".food-edit-name")) {
+        const food = getFood(el.dataset.id);
+        if (food) food.name = el.value.trim() || food.name;
+        saveData();
+        return;
+    }
+
+    if (el.matches('input[name="shake"]')) {
+        state.shakeOption = el.value;
+        saveData();
+        updateOverview();
+    }
+});
+
+document.getElementById("foodList").addEventListener("click",event => {
+    const button = event.target.closest("[data-delete]");
+    if (!button) return;
+
+    state.snacks = state.snacks.filter(
+        s => s.id !== button.dataset.delete
+    );
+
+    saveData();
+    renderFoods();
+});
+
+function toggleEdit() {
+    if (state.editMode) {
+        document.querySelectorAll(".food-edit-name").forEach(input => {
+            const food = getFood(input.dataset.id);
+            if (food) food.name = input.value.trim() || food.name;
+        });
+    }
+
+    state.editMode = !state.editMode;
+    saveData();
+    renderFoods();
+}
+
+function addSnack() {
+    const name = document.getElementById("snackName").value.trim();
+    const calories = document.getElementById("snackCalories").value;
+    const protein = document.getElementById("snackProtein").value;
+
+    if (!name) {
+        alert("Enter a food name.");
+        return;
+    }
+
+    if ([calories,protein].some(v => v !== "" && (!Number.isFinite(Number(v)) || Number(v) < 0))) {
+        alert("Enter valid nutrition values.");
+        return;
+    }
+
+    state.snacks.push({
+        id:"snack_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),
+        name,
+        calories,
+        protein,
+        checked:false
+    });
+
+    document.getElementById("snackName").value = "";
+    document.getElementById("snackCalories").value = "";
+    document.getElementById("snackProtein").value = "";
+
+    saveData();
+    renderFoods();
+}
+
+function resetDaily() {
+    if (!confirm("Reset all daily progress, restore default meals and delete custom snacks?")) {
+        return;
+    }
+
+    state.foods = structuredClone(defaults);
+    state.snacks = [];
+    state.shakeOption = "water";
+    state.editMode = false;
+
+    saveData();
+    renderFoods();
+}
+
+function updateDate() {
+    document.getElementById("date").textContent =
+        new Intl.DateTimeFormat("en-US",{
+            weekday:"short",
+            month:"short",
+            day:"numeric"
+        }).format(new Date());
+}
+
+loadData();
+updateDate();
+renderFoods();
+
+</script>
+</body>
+</html>
